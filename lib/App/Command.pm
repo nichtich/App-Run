@@ -236,7 +236,7 @@ sub logger {
 	foreach my $c (@config) {
 		my $app = Log::Log4perl::Appender->new( $c->{class}, %$c );
 		my $layout = Log::Log4perl::Layout::PatternLayout->new( 
-			$c->{layout} || "%d %p{1} %c: %m{chomp}%n" );
+			$c->{layout} || "%d{yyyy-mm-ddTHH::mm} %p{1} %c: %m{chomp}%n" );
 		$app->layout( $layout);
 		$app->threshold( $c->{threshold} ) if exists $c->{threshold};
 		$log->add_appender($app);
