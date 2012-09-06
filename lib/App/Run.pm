@@ -6,6 +6,7 @@ use warnings;
 use v5.10;
 
 use Carp;
+use Try::Tiny;
 use Clone qw(clone);
 use Scalar::Util qw(reftype blessed);
 use Log::Contextual::WarnLogger;
@@ -129,9 +130,12 @@ sub load_config {
 	my $config;
 	try {
 		if ($from) {
+			# Config::Any interface sucks
 			$config = Config::Any->load_files( { 
-				files => [$from], use_ext => 1
+				files => [$from], use_ext => 1,
+				flatten_to_hash => 1,
 			} );
+			(undef,$config) = %$config;
 		} else {
 			$config = Config::Any->load_stems( {
 				stems => [$self->name], 
@@ -139,7 +143,9 @@ sub load_config {
 			} );
 		}
 	} catch {
-		croak "failed to load config file: $_";
+		$_ //= ''; # where's our error message?!
+		croak sprintf("failed to load config file %s: $_",
+			($from || $self->name.".*"));
 	};
 
 	if ($config) {

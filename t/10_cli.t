@@ -9,8 +9,8 @@ use Data::Dumper;
 my ($expect_args,$expect_options);
 my $app = sub {
 	my ($options, @args) = @_;
-	is_deeply $options, $expect_options, 'parsed options';
-	is_deeply \@args, $expect_args, 'remaining args';
+	is_deeply $options, $expect_options, 'got options';
+	is_deeply \@args, $expect_args, 'got args';
 };
 
 my $run = App::Run->new($app, config => undef);
