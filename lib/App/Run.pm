@@ -127,7 +127,7 @@ sub load_config {
 
 	# TODO: log this by using a default logger
 
-	my $config;
+	my ($config,$configfile);
 	try {
 		if ($from) {
 			# Config::Any interface sucks
@@ -135,13 +135,14 @@ sub load_config {
 				files => [$from], use_ext => 1,
 				flatten_to_hash => 1,
 			} );
-			(undef,$config) = %$config;
 		} else {
 			$config = Config::Any->load_stems( {
 				stems => [$self->name], 
 				use_ext => 1,
+				flatten_to_hash => 1,
 			} );
 		}
+		($configfile,$config) = %$config;
 	} catch {
 		$_ //= ''; # where's our error message?!
 		croak sprintf("failed to load config file %s: $_",
@@ -367,7 +368,11 @@ sub enable_logger {
 
 1;
 
+=encoding utf8
+
 =head1 SYNOPSIS
+
+THIS IS AN EARLY DEVELOPER RELEASE NOT FULLY COVERED BY TESTS!
 
 	my $app = sub {
 		my ($options, @args) = @_;
