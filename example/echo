@@ -1,0 +1,31 @@
+use strict;
+use warnings;
+use v5.10.1;
+
+use App::Run;
+
+my $app = Echo->new;
+App::Run->new($app)->run_with_args(@ARGV);
+
+package Echo;
+use Data::Dumper;
+
+sub new { bless {}, shift };
+
+sub run {
+	my ($self,$options,@args) = @_;
+	print Dumper($options);
+	say $_ for @args;
+}
+
+1;
+
+=head1 NAME
+
+echo - Sample application for App::Run
+
+=head1 SYNOPSIS
+
+   app-run something
+
+=cut
