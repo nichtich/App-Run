@@ -15,6 +15,21 @@ use Log::Contextual qw(:log :Dlog with_logger), -default_logger
 use File::Basename qw();
 use Config::Any;
 
+sub import {
+  	my $pkg = shift;
+  	my $callpkg = caller(0);
+
+	if (@_ and $_[0] eq 'script') {
+		my $run = sub {
+			my $opts = shift;
+			no strict 'refs';
+			*{"${callpkg}::OPTS"} = \$opts;
+			@ARGV = @_;
+		};
+		App::Run->new($run)->run_with_args(@ARGV);
+	}
+}
+
 =method new( $app, [ %options ] )
 
 Create a new application instance, possibly with options.
@@ -373,12 +388,28 @@ sub enable_logger {
 =head1 SYNOPSIS
 
 THIS IS AN EARLY DEVELOPER RELEASE NOT FULLY COVERED BY TESTS!
+	
+	### shortest form of a script
+	use App::Run 'script'; # parses @ARGV and sets $OPTS
+	...; 
+    =head1 SYNOPSIS
+	...
+    =cut
 
-	my $app = sub {
-		my ($options, @args) = @_;
-		... # do something
-	};
-	App::Run->new( $app )->run_with_args(@ARGV);
+
+    ### put script into a sub
+	use App::Run;
+
+	sub main {
+		my ($opts, @args) = @_;
+		...;
+	}
+	
+	App::Run->new( \&main )->run_with_args(@ARGV);
+
+
+	### put script into a package
+    ... 	
 
 =head1 DESCRIPTION
 
