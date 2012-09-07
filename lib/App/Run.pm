@@ -10,26 +10,33 @@ use Try::Tiny;
 use Clone qw(clone);
 use Scalar::Util qw(reftype blessed);
 use Log::Contextual::WarnLogger;
-use Log::Contextual qw(:log :Dlog with_logger), -default_logger
-    => Log::Contextual::WarnLogger->new({ env_prefix => 'APP_RUN' });
+use Log::Contextual qw(:log :Dlog with_logger set_logger), -default_logger =>
+   Log::Contextual::WarnLogger->new({ env_prefix => 'APP_RUN' });
 use File::Basename qw();
 use Config::Any;
 
 our $CALLPKG;
 
 sub import {
-      my $pkg = shift;
-      $CALLPKG = caller(0);
+    my $pkg = shift;
+    $CALLPKG = caller(0);
 
     no strict 'refs';
     if (@_ and $_[0] eq 'script') {
+      my $app;
         my $run = sub {
             my $opts = shift;
             *{"${CALLPKG}::OPTS"} = \$opts;
             @ARGV = @_;
+#         set_logger $app->logger;
         };
-        App::Run->new($run)->run_with_args(@ARGV);
-    }
+#      foreach my $name (qw(log_error)) {
+#         *{"${CALLPKG}::$name"} = \*{ $name };
+#      }
+      $app = App::Run->new($run);
+      $app->run_with_args(@ARGV);
+   }
+   # TODO: require_version 
 }
 
 =method new( $app, [ %options ] )
@@ -72,6 +79,7 @@ The following arguments are always detected:
     --h, --help               print help with POD::Usage and exit
     --v, --version            print version and exit
     -c FILE, --config FILE    sets option config=file
+    --quiet                   sets loglevel=ERROR
 
 The option C<config> is set to the empty string by default.
 
@@ -95,6 +103,7 @@ sub parse_options {
     $parser->getoptions(
         "h|help"     => \$help,
         "v|version"  => \$version,
+        "q|quiet"    => sub { $options->{loglevel} = 'ERROR' },
         "c|config=s" => sub { $options->{config} = $_[1] },
     );
 
