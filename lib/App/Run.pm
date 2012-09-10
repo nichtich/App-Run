@@ -76,7 +76,7 @@ call this method once and only for command line applications.
 
 The following arguments are always detected:
 
-    --h, --help               print help with POD::Usage and exit
+    --h, --help, -?           print help with POD::Usage and exit
     --v, --version            print version and exit
     -c FILE, --config FILE    sets option config=file
     --quiet                   sets loglevel=ERROR
@@ -101,7 +101,7 @@ sub parse_options {
 
     my ($help,$version);
     $parser->getoptions(
-        "h|help"     => \$help,
+        "h|?|help"   => \$help,
         "v|version"  => \$version,
         "q|quiet"    => sub { $options->{loglevel} = 'ERROR' },
         "c|config=s" => sub { $options->{config} = $_[1] },
