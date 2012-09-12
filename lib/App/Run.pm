@@ -11,7 +11,8 @@ use Clone qw(clone);
 use Scalar::Util qw(reftype blessed);
 use Log::Contextual::WarnLogger;
 use Log::Contextual qw(:log :Dlog with_logger set_logger), -default_logger =>
-   Log::Contextual::WarnLogger->new({ env_prefix => 'APP_RUN' });
+    Log::Contextual::WarnLogger->new({ env_prefix => 'APP_RUN' });
+use Log::Log4perl qw();
 use File::Basename qw();
 use Config::Any;
 
@@ -363,7 +364,7 @@ values C<logger> and C<loglevel>, for instance in a YAML config file:
       - class:     Log::Log4perl::Appender::File
         filename:  error.log
         threshold: ERROR
-      - class:     Log::Log4perl::Appender::Scren
+      - class:     Log::Log4perl::Appender::Screen
         layout:    "%d{yyyy-mm-ddTHH::mm} %p{1} %C: %m{chomp}%n"
 
 =cut
@@ -425,9 +426,13 @@ THIS IS AN EARLY DEVELOPER RELEASE NOT FULLY COVERED BY TESTS!
 
     ### shortest form of a script
     use App::Run 'script'; # parses @ARGV and sets $OPTS
-    ...;
+    
+	...; # your script
+
     =head1 SYNOPSIS
-    ...
+    
+	...your documentation...
+
     =cut
 
 
@@ -443,7 +448,25 @@ THIS IS AN EARLY DEVELOPER RELEASE NOT FULLY COVERED BY TESTS!
 
 
     ### put script into a package
-    ...
+    use App::Run;
+
+	{ 
+	    package MyApp;
+        
+		our $VERSION = 1.0; # shown if called with -v
+
+	    sub init {          # called before first run
+			my ($opts) = @_;
+	        ...; 
+	    }
+
+	    sub run {           # main method
+            my ($opts, @args) = @_;
+			...;
+	    }
+	}
+
+	App::Run->new( MyApp->new )->run_with_args(@ARGV);
 
 =head1 DESCRIPTION
 
