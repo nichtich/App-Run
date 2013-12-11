@@ -422,7 +422,9 @@ sub enable_logger {
 
 =head1 SYNOPSIS
 
-THIS IS AN EARLY DEVELOPER RELEASE NOT FULLY COVERED BY TESTS!
+THIS MODULE IS NOT MAINTAINED ANYMORE. Please just 
+L<http://neilb.org/2013/07/24/adopt-a-module.html|adopt it> 
+or have a look at L<App::Cmd> instead!
 
     ### shortest form of a script
     use App::Run 'script'; # parses @ARGV and sets $OPTS
